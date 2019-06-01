@@ -1,22 +1,29 @@
+from django.db.models import Prefetch
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core import models, serializers, serializers_params, mixins
+from core import models, serializers, serializers_params, mixins, filters
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
+    filter_class = filters.UserFilter
     ordering_fields = '__all__'
     ordering = ('-id',)
 
 
-class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = models.Department.objects.prefetch_related('users').all()
+class DepartmentViewSet(viewsets.ModelViewSet, mixins.DepartmentMixin):
+    queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
+    filter_class = filters.DepartmentFilter
     ordering_fields = '__all__'
     ordering = ('-id',)
+
+    def list(self, request, *args, **kwargs):
+        self.queryset = self.get_queryset_default_or_prefetch(request=request)
+        return super(DepartmentViewSet, self).list(request, *args, **kwargs)
 
 
 class NoticeViewSet(viewsets.ModelViewSet):

@@ -1,8 +1,18 @@
 from typing import List
 
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 
 from core import models
+
+
+class DepartmentMixin:
+    @staticmethod
+    def get_queryset_default_or_prefetch(request):
+        if 'user_not_in' in request.query_params:
+            return models.Department.objects.all()
+        return models.Department.objects.prefetch_related(
+            Prefetch('users', queryset=models.User.objects.all())
+        ).all()
 
 
 class ChatMixin:
