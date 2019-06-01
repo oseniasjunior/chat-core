@@ -147,3 +147,21 @@ CORS_ALLOW_METHODS = default_methods
 LOCALE_PATHS = (
     path.join(BASE_DIR, 'locale'),
 )
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'sql_file_log': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/tmp/sql.log',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['sql_file_log'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
