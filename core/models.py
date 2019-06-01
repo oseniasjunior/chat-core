@@ -92,6 +92,9 @@ class User(ModelBase):
 
 
 class Chat(ModelBase):
+    from core import actions as core_actions
+    actions = core_actions.ChatActions()
+
     class Meta:
         db_table = 'chat'
         verbose_name = _('Chat')
@@ -99,6 +102,8 @@ class Chat(ModelBase):
 
 
 class ChatUser(ModelBase):
+    from core import managers
+
     user = models.ForeignKey(
         to='User',
         on_delete=models.DO_NOTHING,
@@ -117,6 +122,7 @@ class ChatUser(ModelBase):
         related_name='chat_users',
         verbose_name=_('Chat')
     )
+    objects = managers.ChatUserManager()
 
     class Meta:
         db_table = 'chat_user'

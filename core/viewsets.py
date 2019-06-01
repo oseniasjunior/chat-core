@@ -1,9 +1,9 @@
-from django.db.models import Prefetch
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from core import models, serializers, serializers_params, mixins, filters
+from core import models, serializers, serializers_params, filters
+from core.mixins import viewsets as viewsets_mixins
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -14,7 +14,7 @@ class UserViewSet(viewsets.ModelViewSet):
     ordering = ('-id',)
 
 
-class DepartmentViewSet(viewsets.ModelViewSet, mixins.DepartmentMixin):
+class DepartmentViewSet(viewsets.ModelViewSet, viewsets_mixins.DepartmentViewSetMixin):
     queryset = models.Department.objects.all()
     serializer_class = serializers.DepartmentSerializer
     filter_class = filters.DepartmentFilter
@@ -33,7 +33,7 @@ class NoticeViewSet(viewsets.ModelViewSet):
     ordering = ('-id',)
 
 
-class ChatViewSet(viewsets.ModelViewSet, mixins.ChatMixin):
+class ChatViewSet(viewsets.ModelViewSet):
     queryset = models.Chat.objects.all()
     serializer_class = serializers.ChatSerializer
     ordering_fields = '__all__'
@@ -43,7 +43,7 @@ class ChatViewSet(viewsets.ModelViewSet, mixins.ChatMixin):
     def get_or_create(self, request, *args, **kwargs):
         result_serializer = serializers_params.ChatSerializerParam(data=request.data, context={'request': request})
         result_serializer.is_valid(raise_exception=True)
-        chat = self.get_or_create_chat(users=result_serializer.validated_data['users'])
+        chat = models.Chat.actions.get_or_create_chat(users=result_serializer.validated_data['users'])
         result_serializer = self.get_serializer(chat)
         return Response(data=result_serializer.data, status=status.HTTP_200_OK)
 
