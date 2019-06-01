@@ -19,5 +19,5 @@ class ChatSerializerParam(serializers.Serializer):
     def validate(self, attrs):
         users = attrs['users']
         if users[0] == users[1]:
-            raise exceptions.UserCanNotBeSome()
+            raise exceptions.UserCanNotBeSomeException()
         return super(ChatSerializerParam, self).validate(attrs=attrs)
