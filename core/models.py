@@ -1,5 +1,10 @@
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from chat import settings
+from core.managers import UserManager
 
 
 class ModelBase(models.Model):
@@ -61,34 +66,76 @@ class Notice(ModelBase):
         verbose_name_plural = _('Notices')
 
 
-class User(ModelBase):
+class User(AbstractBaseUser, PermissionsMixin):
     department = models.ForeignKey(
         to='Department',
         on_delete=models.DO_NOTHING,
         db_column='id_department',
-        null=False,
+        null=True,
         db_index=False,
         related_name='users',
         verbose_name=_('Department')
     )
+    username = models.CharField(
+        db_column='tx_username',
+        null=False,
+        max_length=64,
+        unique=True,
+        verbose_name=_('Username')
+    )
+    password = models.CharField(
+        db_column='tx_password',
+        null=False,
+        max_length=104,
+        verbose_name=_('Password')
+    )
     name = models.CharField(
         db_column='tx_name',
-        max_length=64,
-        null=False,
-        unique=True,
+        null=True,
+        max_length=256,
         verbose_name=_('Name')
     )
+    email = models.CharField(
+        db_column='tx_email',
+        null=True,
+        max_length=256,
+        verbose_name=_('E-mail')
+    )
+    last_login = models.DateTimeField(
+        db_column='dt_last_login',
+        null=True,
+        verbose_name=_('Last login')
+    )
+    is_active = models.BooleanField(
+        db_column='cs_active',
+        null=False,
+        default=True,
+        verbose_name=_('Active')
+    )
+    is_superuser = models.BooleanField(
+        db_column='cs_superuser',
+        null=True,
+        default=False,
+        verbose_name=_('Superuser')
+    )
+    is_staff = models.BooleanField(
+        db_column='cs_staff',
+        null=True,
+        default=False,
+        verbose_name=_('Staff')
+    )
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['name']
 
     class Meta:
-        db_table = 'user'
         verbose_name = _('User')
         verbose_name_plural = _('Users')
         indexes = [
             models.Index(fields=['department'])
         ]
-
-    def __str__(self):
-        return self.name
 
 
 class Chat(ModelBase):
@@ -103,9 +150,8 @@ class Chat(ModelBase):
 
 class ChatUser(ModelBase):
     from core import managers
-
     user = models.ForeignKey(
-        to='User',
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
         db_column='id_user',
         null=False,
@@ -136,7 +182,7 @@ class ChatUser(ModelBase):
 
 class ChatMessage(ModelBase):
     user = models.ForeignKey(
-        to='User',
+        to=settings.AUTH_USER_MODEL,
         on_delete=models.DO_NOTHING,
         db_column='id_user',
         null=False,
