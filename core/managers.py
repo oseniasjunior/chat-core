@@ -43,3 +43,4 @@ class ChatUserManager(models.Manager):
         ).values('chat').annotate(
             counter=Count('id')
         ).filter(counter=2)
+

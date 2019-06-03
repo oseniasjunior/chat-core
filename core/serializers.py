@@ -15,7 +15,7 @@ class SerializerBase(FlexFieldsModelSerializer, serializers.HyperlinkedModelSeri
 class UserSerializer(SerializerBase):
     class Meta:
         model = models.User
-        fields = '__all__'
+        fields = ['url', 'id', 'username']
 
 
 class DepartmentSerializer(SerializerBase):
@@ -26,7 +26,7 @@ class DepartmentSerializer(SerializerBase):
     expandable_fields = {
         'users': (
             UserSerializer,
-            {'source': 'users', 'fields': ['id', 'name'], 'many': True}
+            {'source': 'users', 'fields': ['id', 'username'], 'many': True}
         )
     }
 
