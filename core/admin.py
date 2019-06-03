@@ -20,8 +20,8 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(models.User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'active', 'created_at', 'modified_at')
+    list_display = ('id', 'name', 'is_active',)
     search_fields = ('id', 'name')
-    list_filter = ('active',)
+    list_filter = ('is_active',)
     list_per_page = 50
     list_max_show_all = 5000
