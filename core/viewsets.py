@@ -56,7 +56,8 @@ class ChatUserViewSet(viewsets.ModelViewSet):
 
 
 class ChatMessageViewSet(viewsets.ModelViewSet):
-    queryset = models.ChatMessage.objects.all()
+    queryset = models.ChatMessage.objects.select_related('user').all()
     serializer_class = serializers.ChatMessageSerializer
+    filter_class = filters.ChatMessageFilter
     ordering_fields = '__all__'
-    ordering = ('-id',)
+    ordering = ('id',)

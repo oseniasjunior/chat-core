@@ -2,6 +2,8 @@ from urllib import parse
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
+from core import tasks
+
 
 class ConsumerBase(AsyncJsonWebsocketConsumer):
 
@@ -27,3 +29,15 @@ class ConversationConsumer(ConsumerBase):
     def get_group_name(self):
         query_params = self.get_query_params()
         return 'chat-{}'.format(query_params.get('chat'))
+
+    async def receive_json(self, content, **kwargs):
+        params = dict()
+        params['chat'] = self.get_query_params().get('chat')
+        params['username'] = content['username']
+        params['message'] = content['message']
+
+        tasks.save_messages.apply_async([params])
+        await self.channel_layer.group_send(
+            self.get_group_name(),
+            {"type": "group.message", "content": content}
+        )

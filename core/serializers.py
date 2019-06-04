@@ -50,6 +50,8 @@ class ChatUserSerializer(SerializerBase):
 
 
 class ChatMessageSerializer(SerializerBase):
+    username = serializers.SlugRelatedField(read_only=True, source='user', slug_field='username')
+
     class Meta:
         model = models.ChatMessage
         fields = '__all__'

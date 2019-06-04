@@ -28,3 +28,11 @@ class UserFilter(filterset.FilterSet):
     class Meta:
         model = models.User
         fields = ['name']
+
+
+class ChatMessageFilter(filterset.FilterSet):
+    chat = filterset.NumberFilter(lookup_expr=FILTER_EQUALS)
+
+    class Meta:
+        model = models.ChatMessage
+        fields = ['chat']
