@@ -26,7 +26,7 @@ class DepartmentSerializer(SerializerBase):
     expandable_fields = {
         'users': (
             UserSerializer,
-            {'source': 'users', 'fields': ['id', 'username'], 'many': True}
+            {'source': 'users', 'fields': ['url', 'id', 'username'], 'many': True}
         )
     }
 

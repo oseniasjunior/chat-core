@@ -52,6 +52,9 @@ class Department(ModelBase):
         verbose_name = _('Department')
         verbose_name_plural = _('Departments')
 
+    def __str__(self):
+        return self.name
+
 
 class Notice(ModelBase):
     content = models.TextField(
